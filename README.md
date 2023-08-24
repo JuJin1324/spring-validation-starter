@@ -18,17 +18,14 @@
 > SelfValidating.java
 > ```java
 > public abstract class SelfValidating<T> {
->     private final Validator validator;
-> 
->     public SelfValidating() {
->         ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
->         validator = factory.getValidator();
->     }
-> 
 >     protected void validateSelf() {
->         Set<ConstraintViolation<T>> violations = validator.validate((T) this);
->         if (!violations.isEmpty()) {
->             throw new ConstraintViolationException(violations);
+>         ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
+> 
+>         try (factory) {
+>             Set<ConstraintViolation<T>> violations = factory.getValidator().validate((T) this);
+>             if (!violations.isEmpty()) {
+>                 throw new ConstraintViolationException(violations);
+>             }
 >         }
 >     }
 > }

@@ -1,6 +1,9 @@
 package starter.spring.validation.core.validation;
 
-import javax.validation.*;
+import javax.validation.ConstraintViolation;
+import javax.validation.ConstraintViolationException;
+import javax.validation.Validation;
+import javax.validation.ValidatorFactory;
 import java.util.Set;
 
 /**
@@ -8,17 +11,14 @@ import java.util.Set;
  * Created Date : 2023/08/24
  */
 public abstract class SelfValidating<T> {
-    private final Validator validator;
-
-    public SelfValidating() {
-        ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
-        validator = factory.getValidator();
-    }
-
     protected void validateSelf() {
-        Set<ConstraintViolation<T>> violations = validator.validate((T) this);
-        if (!violations.isEmpty()) {
-            throw new ConstraintViolationException(violations);
+        ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
+
+        try (factory) {
+            Set<ConstraintViolation<T>> violations = factory.getValidator().validate((T) this);
+            if (!violations.isEmpty()) {
+                throw new ConstraintViolationException(violations);
+            }
         }
     }
 }
