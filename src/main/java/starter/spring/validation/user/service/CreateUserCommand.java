@@ -19,6 +19,8 @@ public class CreateUserCommand extends SelfValidating<CreateUserCommand> {
     private final int age;
 
     public CreateUserCommand(String name, int age) {
+        super(CreateUserCommand.class);
+
         this.name = name;
         this.age = age;
 

@@ -18,16 +18,20 @@
 > SelfValidating.java
 > ```java
 > public abstract class SelfValidating<T> {
->     protected void validateSelf() {
->         ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
-> 
->         try (factory) {
->             Set<ConstraintViolation<T>> violations = factory.getValidator().validate((T) this);
->             if (!violations.isEmpty()) {
->                 throw new ConstraintViolationException(violations);
->             }
->         }
->     }
+> 	  private static final ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
+> 	  private static final Validator validator = factory.getValidator();
+> 	  private final Class<T> selfClass;
+>   
+> 	  protected SelfValidating(Class<T> selfClass) {
+> 	  	  this.selfClass = selfClass;
+> 	  }
+>   
+> 	  protected void validateSelf() {
+> 	  	  Set<ConstraintViolation<T>> violations = validator.validate(selfClass.cast(this));
+> 	  	  if (!violations.isEmpty()) {
+> 	  	  	throw new ConstraintViolationException(violations);
+> 	  	  }
+> 	  }
 > }
 > ```
 
@@ -42,6 +46,8 @@
 >     private final int age;
 > 
 >     public CreateUserCommand(String name, int age) {
+>         super(CreateUserCommand.class);
+> 
 >         this.name = name;
 >         this.age = age;
 > 
